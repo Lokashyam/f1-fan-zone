@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Pit Wall – a home for Formula 1 fans</title>
+<meta name="description" content="A fan-made home for Formula 1 supporters: pick your team, learn the strategy, and join the pit wall.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&family=Public+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --asphalt: #171b21;
+    --asphalt-2: #1f252d;
+    --asphalt-3: #2a323c;
+    --line: #36404c;
+    --kerb: #f2f3f5;
+    --muted: #a3adba;
+    --soft: #ff3b30;
+    --medium: #ffd23f;
+    --hard: #f2f3f5;
+    --inter: #3ddc84;
+    --wet: #3aa0ff;
+    --display: "Big Shoulders Display", "Arial Narrow", Impact, sans-serif;
+    --body: "Public Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--asphalt);
+    color: var(--kerb);
+    font-family: var(--body);
+    font-size: 17px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  h1, h2, h3 { font-family: var(--display); line-height: 0.95; margin: 0; letter-spacing: 0.01em; }
+  p { margin: 0; max-width: 62ch; }
+  a { color: inherit; }
+  :focus-visible { outline: 3px solid var(--medium); outline-offset: 3px; border-radius: 4px; }
+
+  .wrap { width: min(1120px, 100% - 40px); margin-inline: auto; }
+  section { padding: 96px 0; }
+  .section-head { margin-bottom: 40px; }
+  .section-head h2 { font-size: clamp(2.4rem, 6vw, 4rem); font-weight: 800; }
+  .section-head p { color: var(--muted); margin-top: 14px; }
+
+  /* Kerb stripe used as a section divider */
+  .kerb {
+    height: 10px;
+    background: repeating-linear-gradient(90deg, var(--soft) 0 28px, var(--kerb) 28px 56px);
+  }
+
+  /* Header */
+  header.site {
+    position: sticky; top: 0; z-index: 10;
+    background: rgba(23, 27, 33, 0.92);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--line);
+  }
+  .bar { display: flex; align-items: center; justify-content: space-between; height: 64px; gap: 16px; }
+  .brand { font-family: var(--display); font-weight: 900; font-size: 1.6rem; text-decoration: none; letter-spacing: 0.02em; display: flex; align-items: center; gap: 10px; }
+  .brand i { width: 14px; height: 24px; background: var(--soft); transform: skewX(-18deg); display: inline-block; }
+  nav ul { list-style: none; display: flex; gap: 6px; margin: 0; padding: 0; }
+  nav a { text-decoration: none; padding: 8px 12px; border-radius: 6px; color: var(--muted); font-weight: 500; font-size: 0.95rem; }
+  nav a:hover { color: var(--kerb); background: var(--asphalt-3); }
+
+  /* Buttons */
+  .btn {
+    display: inline-block; border: 0; cursor: pointer; text-decoration: none;
+    font: 600 1rem var(--body); padding: 14px 22px; border-radius: 8px;
+    transition: transform 0.15s ease, background 0.15s ease;
+  }
+  .btn:active { transform: translateY(1px); }
+  .btn-primary { background: var(--medium); color: #1b1b1b; }
+  .btn-primary:hover { background: #ffdd66; }
+  .btn-ghost { background: transparent; color: var(--kerb); border: 2px solid var(--line); }
+  .btn-ghost:hover { border-color: var(--kerb); }
+
+  /* Hero */
+  .hero { padding: 72px 0 96px; }
+  .hero-grid { display: grid; grid-template-columns: 1.05fr 1fr; gap: 48px; align-items: center; }
+  .hero h1 { font-size: clamp(3.6rem, 10vw, 7.4rem); font-weight: 900; text-transform: none; }
+  .hero p.lead { font-size: 1.15rem; color: var(--muted); margin: 24px 0 32px; }
+  .hero-actions { display: flex; flex-wrap: wrap; gap: 12px; }
+
+  .circuit-card { background: var(--asphalt-2); border: 1px solid var(--line); border-radius: 16px; padding: 20px; }
+  .circuit-card svg { width: 100%; height: auto; display: block; }
+  .circuit-meta { display: flex; justify-content: space-between; color: var(--muted); font-size: 0.9rem; margin-top: 8px; gap: 12px; flex-wrap: wrap; }
+  .circuit-meta b { color: var(--kerb); font-weight: 600; }
+
+  /* Poll */
+  .poll { background: var(--asphalt-2); border-block: 1px solid var(--line); }
+  .poll-list { display: grid; gap: 10px; }
+  .team {
+    position: relative; overflow: hidden; width: 100%; text-align: left;
+    display: grid; grid-template-columns: 12px 1fr auto; align-items: center; gap: 16px;
+    background: var(--asphalt); color: var(--kerb);
+    border: 2px solid var(--line); border-radius: 10px;
+    padding: 14px 18px; cursor: pointer; font: 500 1rem var(--body);
+  }
+  .team:hover { border-color: var(--muted); }
+  .team[aria-pressed="true"] { border-color: var(--kerb); }
+  .team .swatch { width: 12px; height: 32px; border-radius: 3px; transform: skewX(-12deg); }
+  .team .fill { position: absolute; inset: 0 auto 0 0; width: 0; opacity: 0.18; transition: width 0.5s ease; }
+  .team .name, .team .pct { position: relative; }
+  .team .pct { font-family: var(--display); font-size: 1.5rem; font-weight: 800; }
+  .poll-note { color: var(--muted); font-size: 0.9rem; margin-top: 18px; }
+
+  /* Weekend */
+  .weekend { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; position: relative; }
+  .day { padding: 28px 28px 28px 0; border-top: 4px solid var(--kerb); margin-right: 28px; }
+  .day:nth-child(1) { border-top-color: var(--wet); }
+  .day:nth-child(2) { border-top-color: var(--medium); }
+  .day:nth-child(3) { border-top-color: var(--soft); }
+  .day h3 { font-size: 2.2rem; font-weight: 800; margin-bottom: 10px; }
+  .day p { color: var(--muted); }
+  .day ul { margin: 14px 0 0; padding-left: 18px; color: var(--kerb); }
+  .day li { margin-bottom: 4px; }
+  .weekend-note { color: var(--muted); font-size: 0.92rem; margin-top: 24px; }
+
+  /* Tyres */
+  .tyres { background: var(--asphalt-2); border-block: 1px solid var(--line); }
+  .tyre-tabs { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 28px; }
+  .tyre-tab {
+    display: flex; align-items: center; gap: 10px;
+    background: var(--asphalt); color: var(--kerb); cursor: pointer;
+    border: 2px solid var(--line); border-radius: 999px; padding: 8px 18px 8px 10px;
+    font: 600 0.98rem var(--body);
+  }
+  .tyre-tab[aria-selected="true"] { border-color: var(--kerb); background: var(--asphalt-3); }
+  .ring { width: 26px; height: 26px; border-radius: 50%; border: 6px solid var(--c); background: var(--asphalt); }
+  .tyre-panel { display: grid; grid-template-columns: 220px 1fr; gap: 40px; align-items: center; }
+  .tyre-visual { width: 200px; height: 200px; border-radius: 50%; background: radial-gradient(circle, #0e1115 0 38%, var(--c) 38% 46%, #0e1115 46% 100%); border: 10px solid #0b0d10; box-shadow: 0 0 0 2px var(--line); transition: background 0.2s ease; }
+  .tyre-panel h3 { font-size: 3rem; font-weight: 900; margin-bottom: 12px; }
+  .meters { display: grid; gap: 10px; margin-top: 22px; max-width: 420px; }
+  .meter { display: grid; grid-template-columns: 90px 1fr; align-items: center; gap: 12px; font-size: 0.92rem; color: var(--muted); }
+  .meter span.track { height: 8px; background: var(--asphalt-3); border-radius: 4px; overflow: hidden; display: block; }
+  .meter span.track i { display: block; height: 100%; background: var(--c); transition: width 0.3s ease; }
+
+  /* Glossary */
+  .gloss { display: grid; gap: 10px; max-width: 760px; }
+  details { background: var(--asphalt-2); border: 1px solid var(--line); border-radius: 10px; }
+  summary { cursor: pointer; padding: 16px 20px; font-weight: 600; list-style: none; display: flex; justify-content: space-between; gap: 12px; }
+  summary::-webkit-details-marker { display: none; }
+  summary::after { content: "+"; font-family: var(--display); font-size: 1.5rem; line-height: 1; color: var(--muted); }
+  details[open] summary::after { content: "–"; }
+  details p { padding: 0 20px 18px; color: var(--muted); }
+
+  /* Join */
+  .join { background: var(--kerb); color: #14171c; }
+  .join .section-head p { color: #3b4350; }
+  .join-form { display: flex; flex-wrap: wrap; gap: 12px; max-width: 560px; }
+  .join-form label { flex-basis: 100%; font-weight: 600; }
+  .join-form input {
+    flex: 1 1 260px; padding: 14px 16px; border-radius: 8px; border: 2px solid #b7bec9;
+    font: 1rem var(--body); background: #fff; color: #14171c;
+  }
+  .join-form .btn-primary { background: #14171c; color: var(--kerb); }
+  .join-form .btn-primary:hover { background: #2a323c; }
+  .join :focus-visible { outline-color: #14171c; }
+  .form-msg { flex-basis: 100%; min-height: 1.6em; font-weight: 500; }
+  .form-msg.error { color: #b3261e; }
+  .form-msg.ok { color: #14663a; }
+
+  footer { background: var(--asphalt); padding: 40px 0 56px; color: var(--muted); font-size: 0.9rem; }
+  footer p { max-width: 70ch; }
+
+  /* Responsive */
+  @media (max-width: 880px) {
+    section { padding: 72px 0; }
+    .hero-grid { grid-template-columns: 1fr; }
+    .weekend { grid-template-columns: 1fr; }
+    .day { margin-right: 0; padding-right: 0; margin-bottom: 12px; }
+    .tyre-panel { grid-template-columns: 1fr; }
+    .tyre-visual { width: 140px; height: 140px; }
+    nav ul li:not(:last-child) { display: none; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    * { transition: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<header class="site">
+  <div class="wrap bar">
+    <a class="brand" href="#top"><i></i>The Pit Wall</a>
+    <nav aria-label="Main">
+      <ul>
+        <li><a href="#team">Pick a team</a></li>
+        <li><a href="#weekend">Race weekend</a></li>
+        <li><a href="#tyres">Tyres</a></li>
+        <li><a href="#terms">Terms</a></li>
+        <li><a href="#join">Join</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+
+  <!-- Hero -->
+  <div class="hero">
+    <div class="wrap hero-grid">
+      <div>
+        <h1>Race day is better together.</h1>
+        <p class="lead">A fan-made home for Formula 1 supporters. Back your team, learn what the pit wall is thinking, and find people to shout at the telly with.</p>
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="#team">Pick your team</a>
+          <a class="btn btn-ghost" href="#join">Join the fan list</a>
+        </div>
+      </div>
+
+      <div class="circuit-card" aria-label="Animated illustration of two cars on a circuit">
+        <svg viewBox="0 0 600 420" role="img" aria-label="A winding circuit with two cars racing around it">
+          <path id="track" d="M120 300 C60 300 40 220 100 190 L220 130 C260 110 300 130 310 160 C320 190 360 200 400 170 L480 110 C540 70 580 130 540 190 L500 250 C470 295 520 340 450 350 L180 360 C150 362 140 330 120 300 Z"
+                fill="none" stroke="#2a323c" stroke-width="26" stroke-linejoin="round"/>
+          <path d="M120 300 C60 300 40 220 100 190 L220 130 C260 110 300 130 310 160 C320 190 360 200 400 170 L480 110 C540 70 580 130 540 190 L500 250 C470 295 520 340 450 350 L180 360 C150 362 140 330 120 300 Z"
+                fill="none" stroke="#f2f3f5" stroke-width="2" stroke-dasharray="3 14" stroke-linecap="round"/>
+          <!-- start / finish -->
+          <g transform="translate(300 355)">
+            <rect x="-3" y="-17" width="6" height="34" fill="#f2f3f5"/>
+            <rect x="-3" y="-17" width="3" height="8.5" fill="#171b21"/>
+            <rect x="0" y="-8.5" width="3" height="8.5" fill="#171b21"/>
+            <rect x="-3" y="0" width="3" height="8.5" fill="#171b21"/>
+            <rect x="0" y="8.5" width="3" height="8.5" fill="#171b21"/>
+          </g>
+          <circle id="car-a" r="8" fill="#ffd23f" stroke="#171b21" stroke-width="3"/>
+          <circle id="car-b" r="8" fill="#ff3b30" stroke="#171b21" stroke-width="3"/>
+        </svg>
+        <div class="circuit-meta">
+          <span>An imaginary circuit, drawn for this site</span>
+          <span>Lap <b id="lap">1</b></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="kerb" aria-hidden="true"></div>
+
+  <!-- Poll -->
+  <section class="poll" id="team">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>Which team do you back?</h2>
+        <p>Tap a team to cast your vote. You can change it any time.</p>
+      </div>
+      <div class="poll-list" id="poll-list"></div>
+      <p class="poll-note" id="poll-note">These counts are demo numbers. Your pick is saved in this browser only.</p>
+    </div>
+  </section>
+
+  <!-- Race weekend -->
+  <section id="weekend">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>How a race weekend works</h2>
+        <p>Three days, one result. Here is what to watch and when it matters.</p>
+      </div>
+      <div class="weekend">
+        <div class="day">
+          <h3>Friday</h3>
+          <p>Practice. Teams test setups and tyres while the drivers learn the track.</p>
+          <ul>
+            <li>Lap times are not the full story</li>
+            <li>Watch the long runs for race pace</li>
+          </ul>
+        </div>
+        <div class="day">
+          <h3>Saturday</h3>
+          <p>Qualifying decides the starting grid. One perfect lap is everything.</p>
+          <ul>
+            <li>Three knockout sessions</li>
+            <li>Pole position is a big advantage</li>
+          </ul>
+        </div>
+        <div class="day">
+          <h3>Sunday</h3>
+          <p>The race. Strategy, tyre wear, and safety cars decide who wins.</p>
+          <ul>
+            <li>Points go to the top ten</li>
+            <li>Every pit stop can change the order</li>
+          </ul>
+        </div>
+      </div>
+      <p class="weekend-note">Sprint weekends swap some of this around, so check the official schedule for each race.</p>
+    </div>
+  </section>
+
+  <!-- Tyres -->
+  <section class="tyres" id="tyres">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>Read the tyres, read the race</h2>
+        <p>Colour-coded rubber is the quickest way to follow a team's plan.</p>
+      </div>
+      <div class="tyre-tabs" role="tablist" aria-label="Tyre compounds" id="tyre-tabs"></div>
+      <div class="tyre-panel" id="tyre-panel" role="tabpanel" aria-live="polite"></div>
+    </div>
+  </section>
+
+  <!-- Glossary -->
+  <section id="terms">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>Terms you will hear on the radio</h2>
+        <p>Tap a term for a plain-English explanation.</p>
+      </div>
+      <div class="gloss">
+        <details>
+          <summary>Undercut</summary>
+          <p>Pitting before the car ahead so fresh tyres give you faster laps. If it works, you come out in front when they stop.</p>
+        </details>
+        <details>
+          <summary>Box, box</summary>
+          <p>The team telling a driver to come into the pits on the next lap.</p>
+        </details>
+        <details>
+          <summary>Parc fermé</summary>
+          <p>Rules that limit what teams can change on the car after qualifying starts, so the setup is largely locked in for the race.</p>
+        </details>
+        <details>
+          <summary>Safety car and virtual safety car</summary>
+          <p>The safety car leads the field at a slow pace after an incident. The virtual safety car makes everyone slow down without bunching up the field.</p>
+        </details>
+        <details>
+          <summary>Delta</summary>
+          <p>The time gap to another car or to a target lap time. A driver asked to "hit the delta" must stay on a set pace.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- Join -->
+  <section class="join" id="join">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>Join the pit wall</h2>
+        <p>Get a reminder before each race weekend and a short note on what to watch for.</p>
+      </div>
+      <form class="join-form" id="join-form" novalidate>
+        <label for="email">Email address</label>
+        <input id="email" type="email" autocomplete="email" placeholder="you@example.com" required>
+        <button class="btn btn-primary" type="submit">Join the list</button>
+        <div class="form-msg" id="form-msg" role="status"></div>
+      </form>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <p>The Pit Wall is an unofficial fan project. It is not affiliated with Formula 1, the FIA, or any team. Team and tyre names are used only to describe the sport.</p>
+  </div>
+</footer>
+
+<script>
+  /* ---------- Circuit animation ---------- */
+  (function () {
+    var track = document.getElementById('track');
+    var a = document.getElementById('car-a');
+    var b = document.getElementById('car-b');
+    var lapEl = document.getElementById('lap');
+    var length = track.getTotalLength();
+    var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var start = null;
+    var lapTime = 9000; // ms per lap
+
+    function place(el, progress) {
+      var p = track.getPointAtLength((progress % 1) * length);
+      el.setAttribute('cx', p.x);
+      el.setAttribute('cy', p.y);
+    }
+
+    place(a, 0.5); place(b, 0.47);
+    if (reduce) return;
+
+    function frame(t) {
+      if (start === null) start = t;
+      var elapsed = t - start;
+      var progress = 0.5 + elapsed / lapTime;
+      place(a, progress);
+      place(b, progress - 0.035 + Math.sin(elapsed / 1600) * 0.012);
+      lapEl.textContent = Math.floor(elapsed / lapTime) % 99 + 1;
+      requestAnimationFrame(frame);
+    }
+    requestAnimationFrame(frame);
+  })();
+
+  /* ---------- Team poll ---------- */
+  (function () {
+    var teams = [
+      { name: 'Red Bull Racing', color: '#3671c6', votes: 118 },
+      { name: 'Ferrari',         color: '#e8002d', votes: 164 },
+      { name: 'Mercedes',        color: '#27f4d2', votes: 126 },
+      { name: 'McLaren',         color: '#ff8000', votes: 149 },
+      { name: 'Aston Martin',    color: '#229971', votes: 41 },
+      { name: 'Alpine',          color: '#ff87bc', votes: 28 },
+      { name: 'Williams',        color: '#64c4ff', votes: 47 },
+      { name: 'Racing Bulls',    color: '#6692ff', votes: 22 },
+      { name: 'Audi',            color: '#8f9ba6', votes: 25 },
+      { name: 'Haas',            color: '#edeef0', votes: 19 },
+      { name: 'Cadillac',        color: '#5b6b7a', votes: 17 }
+    ];
+    var KEY = 'pitwall-team-pick';
+    var mine = null;
+    try { mine = localStorage.getItem(KEY); } catch (e) { mine = null; }
+
+    var list = document.getElementById('poll-list');
+    var note = document.getElementById('poll-note');
+
+    function render() {
+      var total = 0, i;
+      var counts = teams.map(function (t) {
+        var n = t.votes + (mine === t.name ? 1 : 0);
+        total += n;
+        return n;
+      });
+      list.innerHTML = '';
+      teams.forEach(function (t, idx) {
+        var pct = Math.round((counts[idx] / total) * 100);
+        var btn = document.createElement('button');
+        btn.className = 'team';
+        btn.type = 'button';
+        btn.setAttribute('aria-pressed', mine === t.name ? 'true' : 'false');
+        btn.innerHTML =
+          '<span class="swatch" style="background:' + t.color + '"></span>' +
+          '<span class="name">' + t.name + '</span>' +
+          '<span class="pct">' + pct + '%</span>' +
+          '<span class="fill" style="background:' + t.color + '"></span>';
+        btn.addEventListener('click', function () {
+          mine = (mine === t.name) ? null : t.name;
+          try {
+            if (mine) localStorage.setItem(KEY, mine); else localStorage.removeItem(KEY);
+          } catch (e) { /* storage unavailable; vote still counts for this visit */ }
+          render();
+        });
+        list.appendChild(btn);
+        // animate bar on next frame
+        requestAnimationFrame(function () {
+          var fill = btn.querySelector('.fill');
+          if (fill) fill.style.width = pct + '%';
+        });
+      });
+      note.textContent = mine
+        ? 'You are backing ' + mine + '. Tap it again to remove your vote. Counts are demo numbers.'
+        : 'These counts are demo numbers. Your pick is saved in this browser only.';
+    }
+    render();
+  })();
+
+  /* ---------- Tyre compounds ---------- */
+  (function () {
+    var compounds = [
+      { id: 'soft',   label: 'Soft',         color: '#ff3b30', grip: 95, life: 25,
+        text: 'The fastest dry tyre and the quickest to wear out. Teams use it for qualifying and short, aggressive stints.' },
+      { id: 'medium', label: 'Medium',       color: '#ffd23f', grip: 75, life: 55,
+        text: 'The balanced choice. Good pace with enough life to run a long stint, which makes it a common race tyre.' },
+      { id: 'hard',   label: 'Hard',         color: '#f2f3f5', grip: 55, life: 90,
+        text: 'The most durable dry tyre. Slower per lap, but it can run long and save a pit stop.' },
+      { id: 'inter',  label: 'Intermediate', color: '#3ddc84', grip: 60, life: 50,
+        text: 'For a damp or drying track, when slicks would slide but it is not wet enough for full wets.' },
+      { id: 'wet',    label: 'Full wet',     color: '#3aa0ff', grip: 45, life: 70,
+        text: 'For heavy rain. It clears the most water, so it is slowest, but it keeps the car on the road.' }
+    ];
+
+    var tabs = document.getElementById('tyre-tabs');
+    var panel = document.getElementById('tyre-panel');
+
+    function show(c) {
+      panel.style.setProperty('--c', c.color);
+      panel.innerHTML =
+        '<div class="tyre-visual" aria-hidden="true"></div>' +
+        '<div>' +
+          '<h3>' + c.label + '</h3>' +
+          '<p>' + c.text + '</p>' +
+          '<div class="meters">' +
+            '<div class="meter">Grip<span class="track"><i style="width:' + c.grip + '%"></i></span></div>' +
+            '<div class="meter">Durability<span class="track"><i style="width:' + c.life + '%"></i></span></div>' +
+          '</div>' +
+        '</div>';
+      Array.prototype.forEach.call(tabs.children, function (t) {
+        t.setAttribute('aria-selected', t.dataset.id === c.id ? 'true' : 'false');
+        t.tabIndex = t.dataset.id === c.id ? 0 : -1;
+      });
+    }
+
+    compounds.forEach(function (c) {
+      var t = document.createElement('button');
+      t.className = 'tyre-tab';
+      t.type = 'button';
+      t.setAttribute('role', 'tab');
+      t.dataset.id = c.id;
+      t.innerHTML = '<span class="ring" style="--c:' + c.color + '"></span>' + c.label;
+      t.addEventListener('click', function () { show(c); });
+      t.addEventListener('keydown', function (e) {
+        var i = compounds.indexOf(c);
+        if (e.key === 'ArrowRight') i = (i + 1) % compounds.length;
+        else if (e.key === 'ArrowLeft') i = (i - 1 + compounds.length) % compounds.length;
+        else return;
+        e.preventDefault();
+        show(compounds[i]);
+        tabs.children[i].focus();
+      });
+      tabs.appendChild(t);
+    });
+    show(compounds[1]);
+  })();
+
+  /* ---------- Join form (front-end only) ---------- */
+  (function () {
+    var form = document.getElementById('join-form');
+    var input = document.getElementById('email');
+    var msg = document.getElementById('form-msg');
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var v = input.value.trim();
+      var ok = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+      if (!ok) {
+        msg.className = 'form-msg error';
+        msg.textContent = 'Enter a valid email address, like you@example.com.';
+        input.focus();
+        return;
+      }
+      msg.className = 'form-msg ok';
+      msg.textContent = 'You are on the list. We will email you before the next race weekend.';
+      input.value = '';
+      /* To collect real signups, send `v` to your email service here. */
+    });
+  })();
+</script>
+</body>
+</html>
