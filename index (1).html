@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Parc Fermé – a home for Formula 1 fans</title>
+<meta name="description" content="Race-day threads, watch parties and strategy debates for Formula 1 fans.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  /* ---------- Tokens ---------- */
+  :root {
+    --bg: #eef0ef;
+    --surface: #ffffff;
+    --ink: #1b2024;
+    --muted: #5d676e;
+    --line: #d5dad9;
+
+    --asphalt: #1d2227;
+    --asphalt-2: #2a3138;
+    --on-asphalt: #eef0ef;
+    --on-asphalt-muted: #98a3a9;
+
+    --kerb: #d8262b;
+    --soft: #e23b3b;
+    --medium: #f2c230;
+    --hard: #f4f4f0;
+    --inter: #3fa66b;
+    --wet: #2f7fc1;
+
+    --display: "Archivo", "Arial Narrow", Arial, sans-serif;
+    --body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #14181b;
+      --surface: #1b2125;
+      --ink: #e8ebea;
+      --muted: #98a3a9;
+      --line: #2d353b;
+      --asphalt: #0f1316;
+      --asphalt-2: #222a30;
+    }
+  }
+
+  /* ---------- Base ---------- */
+  *, *::before, *::after { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--body);
+    font-size: 1.0625rem;
+    line-height: 1.6;
+  }
+  a { color: inherit; }
+  :focus-visible { outline: 3px solid var(--medium); outline-offset: 3px; border-radius: 4px; }
+  .wrap { width: min(72rem, 100% - 2.5rem); margin-inline: auto; }
+  h1, h2, h3 { font-family: var(--display); line-height: 1.02; margin: 0; letter-spacing: -0.01em; }
+  h1 { font-weight: 850; font-stretch: 118%; font-size: clamp(2.5rem, 6.2vw, 4.75rem); }
+  h2 { font-weight: 800; font-stretch: 112%; font-size: clamp(1.75rem, 3.6vw, 2.5rem); }
+  p { margin: 0; }
+  .lede { color: var(--muted); max-width: 34rem; }
+
+  /* ---------- Header ---------- */
+  .kerb {
+    height: 10px;
+    background: repeating-linear-gradient(90deg, var(--kerb) 0 28px, #fff 28px 56px);
+  }
+  header.site { border-bottom: 1px solid var(--line); background: var(--surface); }
+  header.site .wrap { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding-block: 0.9rem; }
+  .brand { font-family: var(--display); font-weight: 850; font-stretch: 118%; font-size: 1.35rem; text-decoration: none; letter-spacing: -0.01em; }
+  nav ul { display: flex; gap: 1.5rem; list-style: none; margin: 0; padding: 0; font-weight: 500; }
+  nav a { text-decoration: none; color: var(--muted); }
+  nav a:hover { color: var(--ink); }
+  .btn {
+    display: inline-block; font: inherit; font-weight: 600; cursor: pointer;
+    padding: 0.8rem 1.4rem; border-radius: 6px; border: 2px solid var(--ink);
+    background: var(--ink); color: var(--bg); text-decoration: none;
+  }
+  .btn:hover { background: var(--kerb); border-color: var(--kerb); color: #fff; }
+  .btn.ghost { background: transparent; color: var(--ink); }
+  .btn.ghost:hover { background: var(--ink); border-color: var(--ink); color: var(--bg); }
+
+  /* ---------- Hero ---------- */
+  .hero { padding-block: clamp(2.5rem, 7vw, 5.5rem); }
+  .hero .wrap { display: grid; grid-template-columns: 1fr 1.05fr; gap: clamp(2rem, 5vw, 4rem); align-items: center; }
+  .hero .lede { margin-top: 1.5rem; font-size: 1.15rem; }
+  .hero .actions { display: flex; flex-wrap: wrap; gap: 0.8rem; margin-top: 2rem; }
+
+  /* ---------- Timing tower (fan vote) ---------- */
+  .tower { background: var(--asphalt); color: var(--on-asphalt); border-radius: 10px; overflow: hidden; }
+  .tower-head { padding: 1.1rem 1.25rem 0.9rem; border-bottom: 1px solid var(--asphalt-2); }
+  .tower-head h2 { font-size: 1.25rem; font-stretch: 110%; }
+  .tower-head p { color: var(--on-asphalt-muted); font-size: 0.95rem; margin-top: 0.25rem; }
+  .tower ol { list-style: none; margin: 0; padding: 0; }
+  .row {
+    display: grid;
+    grid-template-columns: 1.6rem 3rem 1fr 3.2rem 3.2rem 5.2rem;
+    align-items: center; gap: 0.6rem;
+    padding: 0.6rem 1.25rem;
+    border-bottom: 1px solid var(--asphalt-2);
+    border-left: 4px solid transparent;
+    font-variant-numeric: tabular-nums;
+  }
+  .row:last-child { border-bottom: 0; }
+  .row.lead { border-left-color: var(--kerb); background: rgba(255,255,255,0.04); }
+  .row .pos { font-family: var(--display); font-weight: 800; color: var(--on-asphalt-muted); }
+  .row .code { font-family: var(--display); font-weight: 800; font-stretch: 110%; font-size: 1.15rem; }
+  .row .who { min-width: 0; }
+  .row .name { font-size: 0.95rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .row .bar { height: 4px; background: var(--asphalt-2); border-radius: 2px; margin-top: 0.3rem; overflow: hidden; }
+  .row .bar i { display: block; height: 100%; background: var(--medium); transition: width 0.45s ease; }
+  .row .votes { text-align: right; font-weight: 600; }
+  .row .gap { text-align: right; color: var(--on-asphalt-muted); font-size: 0.9rem; }
+  .vote-btn {
+    font: inherit; font-size: 0.9rem; font-weight: 600; cursor: pointer;
+    padding: 0.35rem 0.5rem; border-radius: 5px;
+    background: transparent; color: var(--on-asphalt); border: 1.5px solid var(--on-asphalt-muted);
+  }
+  .vote-btn:hover { border-color: var(--medium); color: var(--medium); }
+  .vote-btn[aria-pressed="true"] { background: var(--medium); border-color: var(--medium); color: #1b1b1b; }
+  .tower-foot { padding: 0.8rem 1.25rem; color: var(--on-asphalt-muted); font-size: 0.875rem; }
+
+  /* ---------- Sections ---------- */
+  section.block { padding-block: clamp(2.5rem, 6vw, 4.5rem); border-top: 1px solid var(--line); }
+  .block-head { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: end; margin-bottom: 2.25rem; }
+
+  /* Watch parties */
+  .legend { display: flex; flex-wrap: wrap; gap: 0.5rem 1.25rem; color: var(--muted); font-size: 0.95rem; margin-bottom: 1rem; }
+  .dot { display: inline-block; width: 0.85rem; height: 0.85rem; border-radius: 50%; margin-right: 0.4rem; vertical-align: -0.1em; border: 1.5px solid rgba(0,0,0,0.25); }
+  .dot.soft { background: var(--soft); } .dot.medium { background: var(--medium); }
+  .dot.hard { background: var(--hard); } .dot.inter { background: var(--inter); }
+  .events { list-style: none; padding: 0; margin: 0; border-top: 1px solid var(--line); }
+  .events li { display: grid; grid-template-columns: 2rem 1fr auto; gap: 1rem; align-items: center; padding: 1.1rem 0; border-bottom: 1px solid var(--line); }
+  .events h3 { font-size: 1.2rem; font-weight: 750; font-stretch: 105%; }
+  .events p { color: var(--muted); font-size: 0.98rem; margin-top: 0.15rem; }
+  .events .when { font-weight: 600; text-align: right; }
+
+  /* Threads */
+  .threads { width: 100%; border-collapse: collapse; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+  .threads th, .threads td { text-align: left; padding: 0.85rem 1.1rem; border-bottom: 1px solid var(--line); }
+  .threads th { font-weight: 600; color: var(--muted); font-size: 0.92rem; background: var(--bg); }
+  .threads tr:last-child td { border-bottom: 0; }
+  .threads td.num { text-align: right; font-variant-numeric: tabular-nums; }
+  .threads th.num { text-align: right; }
+  .threads a { font-weight: 600; text-decoration: none; }
+  .threads a:hover { color: var(--kerb); text-decoration: underline; }
+  .table-scroll { overflow-x: auto; }
+
+  /* Join */
+  .join { background: var(--asphalt); color: var(--on-asphalt); border-top: 0; }
+  .join .lede { color: var(--on-asphalt-muted); }
+  .join .wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: center; }
+  .join form { display: grid; gap: 0.8rem; }
+  .join label { font-weight: 600; }
+  .join input[type="email"] {
+    font: inherit; padding: 0.85rem 1rem; border-radius: 6px;
+    border: 2px solid var(--on-asphalt-muted); background: var(--asphalt-2); color: var(--on-asphalt);
+  }
+  .join input[type="email"]:focus-visible { border-color: var(--medium); outline-offset: 2px; }
+  .join .btn { background: var(--kerb); border-color: var(--kerb); color: #fff; }
+  .join .btn:hover { background: #fff; border-color: #fff; color: var(--asphalt); }
+  .join .note { color: var(--on-asphalt-muted); font-size: 0.9rem; }
+  #join-msg { min-height: 1.6em; font-weight: 600; color: var(--medium); }
+
+  footer.site { padding-block: 1.75rem; color: var(--muted); font-size: 0.9rem; }
+  footer.site .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0.5rem 2rem; }
+
+  /* ---------- Responsive ---------- */
+  @media (max-width: 860px) {
+    .hero .wrap, .block-head, .join .wrap { grid-template-columns: 1fr; }
+    nav ul { display: none; }
+  }
+  @media (max-width: 560px) {
+    .row { grid-template-columns: 1.4rem 2.8rem 1fr 3rem 5rem; padding-inline: 0.9rem; }
+    .row .gap { display: none; }
+    .events li { grid-template-columns: 1.5rem 1fr; }
+    .events .when { grid-column: 2; text-align: left; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    .row .bar i { transition: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="kerb" aria-hidden="true"></div>
+
+<header class="site">
+  <div class="wrap">
+    <a class="brand" href="#top">Parc Fermé</a>
+    <nav aria-label="Main">
+      <ul>
+        <li><a href="#vote">Fan vote</a></li>
+        <li><a href="#watch">Watch parties</a></li>
+        <li><a href="#talk">Discussions</a></li>
+      </ul>
+    </nav>
+    <a class="btn ghost" href="#join">Join the club</a>
+  </div>
+</header>
+
+<main id="top">
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="wrap">
+      <div>
+        <h1>Formula 1 is better with people to argue with.</h1>
+        <p class="lede">Parc Fermé is a community for Formula 1 fans. Join race-day threads, drop into a watch party, and debate tyre strategy long after the chequered flag.</p>
+        <div class="actions">
+          <a class="btn" href="#join">Join the club</a>
+          <a class="btn ghost" href="#vote">Cast your vote</a>
+        </div>
+      </div>
+
+      <div class="tower" id="vote">
+        <div class="tower-head">
+          <h2>Driver of the weekend</h2>
+          <p>Fans vote. The tower reorders as the votes come in.</p>
+        </div>
+        <ol id="tower-list" aria-live="polite"></ol>
+        <div class="tower-foot">One vote each. Tap your pick again to take it back.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Watch parties -->
+  <section class="block" id="watch">
+    <div class="wrap">
+      <div class="block-head">
+        <h2>Watch together</h2>
+        <p class="lede">Pick the kind of session you want. Tyre colours tell you how intense it gets.</p>
+      </div>
+
+      <div class="legend" aria-label="Tyre colour key">
+        <span><i class="dot soft"></i>Race day</span>
+        <span><i class="dot medium"></i>Qualifying</span>
+        <span><i class="dot hard"></i>Deep dive</span>
+        <span><i class="dot inter"></i>Newcomers</span>
+      </div>
+
+      <!-- Edit these events with your real schedule -->
+      <ul class="events">
+        <li>
+          <i class="dot soft" title="Race day"></i>
+          <div>
+            <h3>Race-day watch party</h3>
+            <p>Live chat from lights out to the podium. Predictions open before the start.</p>
+          </div>
+          <span class="when">Every race Sunday</span>
+        </li>
+        <li>
+          <i class="dot medium" title="Qualifying"></i>
+          <div>
+            <h3>Qualifying live chat</h3>
+            <p>Who gets pole? Call each session as it happens.</p>
+          </div>
+          <span class="when">Every race Saturday</span>
+        </li>
+        <li>
+          <i class="dot hard" title="Deep dive"></i>
+          <div>
+            <h3>Strategy deep dive</h3>
+            <p>Undercuts, tyre degradation and safety-car gambles, explained and argued over.</p>
+          </div>
+          <span class="when">Monthly</span>
+        </li>
+        <li>
+          <i class="dot inter" title="Newcomers"></i>
+          <div>
+            <h3>New fan meetup</h3>
+            <p>Ask anything. No question about flags, tyres or points is too basic.</p>
+          </div>
+          <span class="when">First Friday of the month</span>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- Discussions -->
+  <section class="block" id="talk">
+    <div class="wrap">
+      <div class="block-head">
+        <h2>What fans are talking about</h2>
+        <p class="lede">Start a thread or jump into one that is already running.</p>
+      </div>
+
+      <!-- Sample threads: replace with your own -->
+      <div class="table-scroll">
+        <table class="threads">
+          <thead>
+            <tr><th>Thread</th><th>Category</th><th class="num">Replies</th><th class="num">Last reply</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><a href="#">Was that the right time to pit?</a></td><td>Strategy</td><td class="num">248</td><td class="num">12 min ago</td></tr>
+            <tr><td><a href="#">Best overtake of the season so far</a></td><td>Racing</td><td class="num">391</td><td class="num">41 min ago</td></tr>
+            <tr><td><a href="#">First time at a Grand Prix: what should I know?</a></td><td>Attending</td><td class="num">87</td><td class="num">2 h ago</td></tr>
+            <tr><td><a href="#">Explain the rules on track limits</a></td><td>Rules</td><td class="num">156</td><td class="num">5 h ago</td></tr>
+            <tr><td><a href="#">Share your race-day snacks</a></td><td>Off track</td><td class="num">63</td><td class="num">Yesterday</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- Join -->
+  <section class="block join" id="join">
+    <div class="wrap">
+      <div>
+        <h2>Get on the grid</h2>
+        <p class="lede" style="margin-top:1rem">Join for race reminders, watch-party links and the weekly fan vote results.</p>
+      </div>
+      <form id="join-form" novalidate>
+        <label for="email">Email address</label>
+        <input id="email" name="email" type="email" placeholder="you@example.com" autocomplete="email" required>
+        <button class="btn" type="submit">Join the club</button>
+        <p id="join-msg" role="status"></p>
+        <p class="note">We only email about races and community events. Unsubscribe any time.</p>
+      </form>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site">
+  <div class="wrap">
+    <span>&copy; <span id="year"></span> Parc Fermé</span>
+    <span>An unofficial fan community. Not affiliated with Formula 1 or any team.</span>
+  </div>
+</footer>
+
+<script>
+  // ---------- Fan vote timing tower ----------
+  // Edit the drivers and starting votes to match your community.
+  const drivers = [
+    { code: "VER", name: "Max Verstappen",  votes: 41 },
+    { code: "NOR", name: "Lando Norris",    votes: 38 },
+    { code: "LEC", name: "Charles Leclerc", votes: 34 },
+    { code: "HAM", name: "Lewis Hamilton",  votes: 31 },
+    { code: "PIA", name: "Oscar Piastri",   votes: 27 },
+    { code: "RUS", name: "George Russell",  votes: 22 },
+    { code: "ALO", name: "Fernando Alonso", votes: 19 },
+    { code: "SAI", name: "Carlos Sainz",    votes: 14 }
+  ];
+
+  const list = document.getElementById("tower-list");
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const rows = new Map();
+  let myVote = null;
+
+  drivers.forEach(d => {
+    const li = document.createElement("li");
+    li.className = "row";
+    li.innerHTML =
+      '<span class="pos"></span>' +
+      '<span class="code">' + d.code + '</span>' +
+      '<span class="who"><span class="name">' + d.name + '</span><span class="bar"><i></i></span></span>' +
+      '<span class="votes"></span>' +
+      '<span class="gap"></span>' +
+      '<button type="button" class="vote-btn" aria-pressed="false">Vote</button>';
+    li.querySelector("button").setAttribute("aria-label", "Vote for " + d.name);
+    li.querySelector("button").addEventListener("click", () => castVote(d.code));
+    rows.set(d.code, li);
+  });
+
+  function castVote(code) {
+    if (myVote === code) {
+      drivers.find(d => d.code === code).votes--;
+      myVote = null;
+    } else {
+      if (myVote) drivers.find(d => d.code === myVote).votes--;
+      drivers.find(d => d.code === code).votes++;
+      myVote = code;
+    }
+    render();
+  }
+
+  function render() {
+    // Record positions before reordering so rows can glide to their new place.
+    const before = new Map();
+    rows.forEach((li, code) => {
+      if (li.isConnected) before.set(code, li.getBoundingClientRect().top);
+    });
+
+    const sorted = [...drivers].sort((a, b) => b.votes - a.votes);
+    const leader = sorted[0].votes || 1;
+
+    sorted.forEach((d, i) => {
+      const li = rows.get(d.code);
+      list.appendChild(li);
+      li.classList.toggle("lead", i === 0);
+      li.querySelector(".pos").textContent = i + 1;
+      li.querySelector(".votes").textContent = d.votes;
+      li.querySelector(".gap").textContent = i === 0 ? "–" : "+" + (sorted[0].votes - d.votes);
+      li.querySelector(".bar i").style.width = Math.max(4, (d.votes / leader) * 100) + "%";
+      const btn = li.querySelector("button");
+      const mine = myVote === d.code;
+      btn.setAttribute("aria-pressed", mine ? "true" : "false");
+      btn.textContent = mine ? "Voted" : "Vote";
+    });
+
+    if (reduceMotion) return;
+    rows.forEach((li, code) => {
+      if (!before.has(code)) return;
+      const delta = before.get(code) - li.getBoundingClientRect().top;
+      if (delta) {
+        li.animate(
+          [{ transform: "translateY(" + delta + "px)" }, { transform: "none" }],
+          { duration: 450, easing: "cubic-bezier(.2,.8,.2,1)" }
+        );
+      }
+    });
+  }
+  render();
+
+  // ---------- Join form ----------
+  // This only shows a confirmation message. Connect it to your email service to collect sign-ups.
+  const form = document.getElementById("join-form");
+  const msg = document.getElementById("join-msg");
+  form.addEventListener("submit", e => {
+    e.preventDefault();
+    const email = document.getElementById("email");
+    if (!email.value || !email.checkValidity()) {
+      msg.textContent = "Enter a valid email address, like you@example.com.";
+      email.focus();
+      return;
+    }
+    msg.textContent = "You're on the grid. Welcome to the club.";
+    form.reset();
+  });
+
+  document.getElementById("year").textContent = new Date().getFullYear();
+</script>
+</body>
+</html>
